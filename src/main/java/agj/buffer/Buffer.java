@@ -1,16 +1,18 @@
 package agj.buffer;
 
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
-public class Buffer {
-  private Queue buffer;
+import java.util.LinkedList;
+import java.util.Queue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Buffer<T> { // generico
+  private Queue<T> mainBuffer;
   private int capacity;
   int numberOperationPut = 0;
-  int ng = 0;
+  int numberOperationGet = 0;
+  private static final Logger LOGGER = LogManager.getLogger(Buffer.class) ;
 
   /**
    * Constructor
@@ -19,43 +21,44 @@ public class Buffer {
    */
   public Buffer(int bsize) {
     capacity = bsize;
-    buffer = new LinkedList();
+    mainBuffer = new LinkedList<T>(); 
+
   }
 
-  public void put(Object element) {
-    if (buffer.size() == capacity)
-      System.exit(-1);;
+  public void put(T element) {
+    if (mainBuffer.size() == capacity) {
+      throw new BufferException("Buffer vacio");  }
 
-    System.out.println("Element inserted");
+    LOGGER.info("Element inserted");
 
-    buffer.add(element);
+    mainBuffer.add(element);
     numberOperationPut++;
   }
 
-  public Object get() throws BufferException {
-    if (buffer.isEmpty())
-      throw new BufferException("Buffer vacio");
+  public T get() throws BufferException {
+    if (mainBuffer.isEmpty()) {
+      throw new BufferException("Buffer vacio");}
 
-    Object value = buffer.remove();
-    System.out.println("Element extracted");
+    T value = mainBuffer.remove();
+    LOGGER.info("Element inserted");
 
-    ng++;
+    numberOperationGet++;
     return value;
   }
 
-  public int GetNumberOfElements() {
-    return buffer.size();
+  public int getNumberOfElements() {
+    return mainBuffer.size();
   }
 
-  public int get_number_of_holes() {
-    return capacity - buffer.size();
+  public int getNumberOfHoles() {
+    return capacity - mainBuffer.size();
   }
 
-  public int gc() {
+  public int getCapacity() {
     return capacity;
   }
 
-  public double getNumberOfOperations() {
-    return numberOperationPut + ng;
+  public int getNumberOfOperations() {
+    return numberOperationPut + numberOperationGet;
   }
 }
